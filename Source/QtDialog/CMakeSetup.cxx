@@ -125,6 +125,15 @@ int main(int argc, char** argv)
   SetupDefaultQSettings();
   QApplication app(argc, argv);
 
+  // Apply dark theme stylesheet by default
+  {
+    QFile styleFile(":/Styles/dark_theme.qss");
+    if (styleFile.open(QFile::ReadOnly | QFile::Text)) {
+      QTextStream styleStream(&styleFile);
+      app.setStyleSheet(styleStream.readAll());
+    }
+  }
+
   setlocale(LC_NUMERIC, "C");
 
   // tell the cmake library where cmake is

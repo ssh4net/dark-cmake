@@ -5,4 +5,7 @@
         <file>Delete16.png</file>
         <file>Plus16.png</file>
     </qresource>
+    <qresource prefix="/Styles" >
+        <file>dark_theme.qss</file>
+    </qresource>
 </RCC>
