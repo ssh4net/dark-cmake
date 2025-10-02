@@ -127,7 +127,10 @@ int main(int argc, char** argv)
 
   // Apply dark theme stylesheet by default
   {
-    QFile styleFile(":/Styles/dark_theme.qss");
+    QString qssPath = QDir(QCoreApplication::applicationDirPath())
+                    .filePath("../themes/dark_theme.qss");
+    //QFile styleFile(":/Styles/dark_theme.qss"); // Embedded in the application
+    QFile styleFile(qssPath);
     if (styleFile.open(QFile::ReadOnly | QFile::Text)) {
       QTextStream styleStream(&styleFile);
       app.setStyleSheet(styleStream.readAll());

@@ -7,6 +7,7 @@
 #include "QCMake.h"
 #include "QCMakePreset.h"
 #include <QEventLoop>
+#include <QColor>
 #include <QMainWindow>
 #include <QThread>
 #include <QVector>
@@ -29,6 +30,7 @@ class CMakeSetupDialog
   , public Ui::CMakeSetupDialog
 {
   Q_OBJECT
+  Q_PROPERTY(QColor errorTextColor READ errorTextColor WRITE setErrorTextColor)
 public:
   CMakeSetupDialog();
   ~CMakeSetupDialog();
@@ -95,6 +97,10 @@ protected slots:
   /// display the modal warning messages dialog window
   void doWarningMessagesDialog();
 
+  // theme properties
+  void setErrorTextColor(QColor const& color);
+  QColor errorTextColor() const { return this->ErrorTextColor; }
+
 protected:
   enum State
   {
@@ -127,6 +133,7 @@ protected:
 
   QTextCharFormat ErrorFormat;
   QTextCharFormat MessageFormat;
+  QColor ErrorTextColor = QColor(Qt::red);
 
   QStringList AddVariableNames;
   QStringList AddVariableTypes;

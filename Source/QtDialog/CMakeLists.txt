@@ -329,6 +329,12 @@ install(TARGETS cmake-gui
   RUNTIME DESTINATION bin ${COMPONENT}
   BUNDLE DESTINATION "${CMAKE_BUNDLE_LOCATION}" ${COMPONENT})
 
+# Install default theme file into "themes" directory only if it does not exist
+# Install default theme stylesheet
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/dark_theme.qss"
+  DESTINATION themes
+  ${COMPONENT})
+
 if(UNIX AND NOT APPLE)
   foreach(size IN ITEMS 32 128)
     install(

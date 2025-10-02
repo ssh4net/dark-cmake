@@ -231,7 +231,7 @@ CMakeSetupDialog::CMakeSetupDialog()
   QFont outputFont("Courier New");
   outputFont.setStyleHint(QFont::Monospace);
   this->Output->setFont(outputFont);
-  this->ErrorFormat.setForeground(QBrush(Qt::red));
+  this->ErrorFormat.setForeground(QBrush(this->ErrorTextColor));
 
   this->Output->setContextMenuPolicy(Qt::CustomContextMenu);
   connect(this->Output, &QTextEdit::customContextMenuRequested, this,
@@ -250,6 +250,12 @@ CMakeSetupDialog::CMakeSetupDialog()
 
   ProgressOffset = 0.0;
   ProgressFactor = 1.0;
+}
+
+void CMakeSetupDialog::setErrorTextColor(QColor const& color)
+{
+  this->ErrorTextColor = color;
+  this->ErrorFormat.setForeground(QBrush(this->ErrorTextColor));
 }
 
 void CMakeSetupDialog::initialize()
