@@ -5,6 +5,7 @@
 #include "QCMake.h"
 #include "QCMakeSizeType.h"
 #include <QItemDelegate>
+#include <QColor>
 #include <QSet>
 #include <QStandardItemModel>
 #include <QTreeView>
@@ -17,6 +18,8 @@ class QCMakeAdvancedFilter;
 class QCMakeCacheView : public QTreeView
 {
   Q_OBJECT
+  Q_PROPERTY(QColor newItemColor READ newItemColor WRITE setNewItemColor)
+  Q_PROPERTY(QColor newGroupColor READ newGroupColor WRITE setNewGroupColor)
 public:
   QCMakeCacheView(QWidget* p);
 
@@ -37,12 +40,20 @@ public slots:
   // set whether to show advanced entries
   void setShowAdvanced(bool);
 
+  // theme colors (exposed to QSS via qproperty-*)
+  void setNewItemColor(QColor const& c);
+  void setNewGroupColor(QColor const& c);
+  QColor newItemColor() const { return this->NewItemColor; }
+  QColor newGroupColor() const { return this->NewGroupColor; }
+
 protected:
   QModelIndex moveCursor(CursorAction, Qt::KeyboardModifiers);
   bool event(QEvent* e);
   QCMakeCacheModel* CacheModel;
   QCMakeAdvancedFilter* AdvancedFilter;
   QSortFilterProxyModel* SearchFilter;
+  QColor NewItemColor;
+  QColor NewGroupColor;
 };
 
 /// Qt model class for cache properties
@@ -61,7 +72,8 @@ public:
     TypeRole = Qt::UserRole,
     AdvancedRole,
     StringsRole,
-    GroupRole
+    GroupRole,
+    NewRole
   };
 
   enum ViewType
@@ -118,10 +130,16 @@ protected:
   cm_qsizetype NewPropertyCount;
   bool ShowNewProperties;
   ViewType View;
+  QBrush NewItemBrush = QBrush(QColor(255, 100, 100));
+  QBrush GroupNewBrush = QBrush(QColor(255, 100, 100));
 
   // set the data in the model for this property
   void setPropertyData(QModelIndex const& idx1, QCMakeProperty const& p,
                        bool isNew);
+
+public:
+  void setNewItemBrush(QBrush const& b) { this->NewItemBrush = b; }
+  void setGroupNewBrush(QBrush const& b) { this->GroupNewBrush = b; }
 
   // breaks up he property list into groups
   // where each group has the same prefix up to the first underscore

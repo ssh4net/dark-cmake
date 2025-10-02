@@ -129,6 +129,10 @@ QCMakeCacheView::QCMakeCacheView(QWidget* p)
   this->setTabKeyNavigation(false);
 
   this->setRootIsDecorated(false);
+
+  // default theme colors (can be overridden via QSS qproperty-*)
+  this->NewItemColor = QColor(255, 100, 100);
+  this->NewGroupColor = QColor(255, 100, 100);
 }
 
 bool QCMakeCacheView::event(QEvent* e)
@@ -137,6 +141,22 @@ bool QCMakeCacheView::event(QEvent* e)
     this->header()->setDefaultSectionSize(this->viewport()->width() / 2);
   }
   return QTreeView::event(e);
+}
+
+void QCMakeCacheView::setNewItemColor(QColor const& c)
+{
+  this->NewItemColor = c;
+  if (this->CacheModel) {
+    this->CacheModel->setNewItemBrush(QBrush(this->NewItemColor));
+  }
+}
+
+void QCMakeCacheView::setNewGroupColor(QColor const& c)
+{
+  this->NewGroupColor = c;
+  if (this->CacheModel) {
+    this->CacheModel->setGroupNewBrush(QBrush(this->NewGroupColor));
+  }
 }
 
 QCMakeCacheModel* QCMakeCacheView::cacheModel() const
@@ -183,6 +203,9 @@ QCMakeCacheModel::QCMakeCacheModel(QObject* p)
   QStringList labels;
   labels << tr("Name") << tr("Value");
   this->setHorizontalHeaderLabels(labels);
+  // default brushes; may be overridden by view setters from QSS
+  this->NewItemBrush = QBrush(QColor(255, 100, 100));
+  this->GroupNewBrush = QBrush(QColor(255, 100, 100));
 }
 
 QCMakeCacheModel::~QCMakeCacheModel() = default;
@@ -284,15 +307,11 @@ void QCMakeCacheModel::setProperties(QCMakePropertyList const& props)
         new QStandardItem(key.isEmpty() ? tr("Ungrouped Entries") : key));
       parentItems.append(new QStandardItem());
 #if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
-      parentItems[0]->setData(QBrush(QColor(255, 100, 100)),
-                              Qt::BackgroundRole);
-      parentItems[1]->setData(QBrush(QColor(255, 100, 100)),
-                              Qt::BackgroundRole);
+      parentItems[0]->setData(this->GroupNewBrush, Qt::BackgroundRole);
+      parentItems[1]->setData(this->GroupNewBrush, Qt::BackgroundRole);
 #else
-      parentItems[0]->setData(QBrush(QColor(255, 100, 100)),
-                              Qt::BackgroundColorRole);
-      parentItems[1]->setData(QBrush(QColor(255, 100, 100)),
-                              Qt::BackgroundColorRole);
+      parentItems[0]->setData(this->GroupNewBrush, Qt::BackgroundColorRole);
+      parentItems[1]->setData(this->GroupNewBrush, Qt::BackgroundColorRole);
 #endif
       parentItems[0]->setData(1, GroupRole);
       parentItems[1]->setData(1, GroupRole);
@@ -387,13 +406,11 @@ void QCMakeCacheModel::setPropertyData(QModelIndex const& idx1,
 
   if (isNew) {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 9, 0)
-    this->setData(idx1, QBrush(QColor(255, 100, 100)), Qt::BackgroundRole);
-    this->setData(idx2, QBrush(QColor(255, 100, 100)), Qt::BackgroundRole);
+    this->setData(idx1, this->NewItemBrush, Qt::BackgroundRole);
+    this->setData(idx2, this->NewItemBrush, Qt::BackgroundRole);
 #else
-    this->setData(idx1, QBrush(QColor(255, 100, 100)),
-                  Qt::BackgroundColorRole);
-    this->setData(idx2, QBrush(QColor(255, 100, 100)),
-                  Qt::BackgroundColorRole);
+    this->setData(idx1, this->NewItemBrush, Qt::BackgroundColorRole);
+    this->setData(idx2, this->NewItemBrush, Qt::BackgroundColorRole);
 #endif
   }
 }
